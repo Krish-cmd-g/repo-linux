@@ -1,0 +1,114 @@
+#!/bin/bash
+
+# Server Configuration
+
+# Update the system
+# Ensure your system is up to date
+sudo yum update -y
+
+# Install BIND packages
+# Install BIND and related utilities
+sudo yum install -y bind bind-utils
+
+# Configure BIND
+# Edit the named.conf file
+sudo nano /etc/named.conf
+
+# Add the following configuration to named.conf
+cat <<EOL | sudo tee /etc/named.conf
+options {
+    listen-on port 53 { any; };
+    directory       "/var/named";
+    dump-file       "/var/named/data/cache_dump.db";
+    statistics-file "/var/named/data/named_stats.txt";
+    memstatistics-file "/var/named/data/named_mem_stats.txt";
+    secroots-file   "/var/named/data/named.secroots";
+    recursing-file  "/var/named/data/named.recursing";
+    allow-query     { any; };
+};
+
+zone "." IN {
+    type hint;
+    file "named.ca";
+};
+
+zone "example.com" IN {
+    type master;
+    file "example.com.db";
+    allow-update { none; };
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+EOL
+
+# Create zone file for your domain
+# Create the zone file in the /var/named directory
+sudo nano /var/named/example.com.db
+
+# Add the following content to the zone file
+cat <<EOL | sudo tee /var/named/example.com.db
+\$TTL 86400
+@   IN  SOA ns1.example.com. root.example.com. (
+        2021100401  ; Serial
+        3600        ; Refresh
+        1800        ; Retry
+        604800      ; Expire
+        86400 )     ; Minimum TTL
+@   IN  NS  ns1.example.com.
+ns1 IN  A   192.168.1.10
+@   IN  A   192.168.1.10
+EOL
+
+# Set correct permissions
+# Ensure the named service can access the zone files
+sudo chown named:named /var/named/example.com.db
+sudo chmod 640 /var/named/example.com.db
+
+# Start and enable BIND service
+# Start the BIND service and enable it to run on boot
+sudo systemctl start named
+sudo systemctl enable named
+
+# Open firewall ports
+# Open the necessary ports for DNS
+sudo firewall-cmd --permanent --add-port=53/udp
+sudo firewall-cmd --permanent --add-port=53/tcp
+sudo firewall-cmd --reload
+------------------------------------
+# Client Configuration
+========================
+# Configure the client
+# On the client machine, configure the DNS resolver
+sudo nano /etc/resolv.conf
+
+# Add your DNS server
+# Replace 192.168.1.10 with the IP address of your DNS server
+cat <<EOL | sudo tee /etc/resolv.conf
+nameserver 192.168.1.10
+EOL
+
+# Add Host Entry (Server)
+# Add an entry for the DNS server in the hosts file on the server
+sudo nano /etc/hosts
+# Add the following line
+# 192.168.1.10  ns1.example.com
+
+# Add Host Entry (Client)
+# Add an entry for the DNS server in the hosts file on the client
+sudo nano /etc/hosts
+# Add the following line
+# 192.168.1.10  ns1.example.com
+
+# Test DNS Configuration
+# Use the dig command to verify DNS resolution
+dig example.com
+
+# Verify DNS functionality
+# Check the service status
+sudo systemctl status named
+
+# Test name resolution
+# Use nslookup or dig to test DNS resolution on the client
+nslookup example.com
+
