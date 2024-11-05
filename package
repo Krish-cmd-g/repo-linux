@@ -1,0 +1,37 @@
+Install and Update Software Packages:
+-------------------------------------
+rpm------ redhat package manager
+          its used to install/update/upgrade and remove .rpm softwares.
+rpm -ivh httpd.rpm  --- install
+rpm -e httpd.rpm  ------ ininstall
+rpm -qa ----- query about software
+------------------------------------------------------------------------------
+yum/dnf------yellowdog updater modify
+Difference between RPM and yum
+ You need to install software through RPM you need to download the software in local machine or you know the location of the software.
+ But we are using yum its work based on repositories(play store).
+What is repository?
+ Repository means collection of metadata information.
+----
+configure the repository?
+------------------------------
+we need know the location of repository:
+------------------------------------------
+url=http://content.example.com/rhel9.0/x86_64/dvd/AppStream
+url=http://content.example.com/rhel9.0/x86_64/dvd/BaseOS
+
+where is repo files stored?
+/etc/yum.repos.d
+
+dnf confige-manager --add-repo http://content.example.com/rhel9.0/x86_64/dvd/AppStream
+dnf confige-manager --add-repo http://content.example.com/rhel9.0/x86_64/dvd/BaseOS
+rpm and yum/dnf this two tools based on redhat OS:
+
+
+apt-------------based on ubuntu
+apt install
+apt update
+apt remove/uninstall
+
+pocman---------------based on arch OS
+debin---------------- debin base OS
