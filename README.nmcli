@@ -1,0 +1,5 @@
+nmcli connection add "profile_name" ifname "interface_name" type "____"
+
+
+nmcli connection mod "profile_name" ipv4.addresses 0.0.0.0/0 ipv4.gateway "gwaddress" ipv4.dns "dns_address" ipv4.method "manual
+"
