@@ -1,4 +1,3 @@
-vi /etc/yum.repos.d/centos.repo 
 [baseos]
 name=CentOS Stream $releasever - BaseOS
 metalink=https://mirrors.centos.org/metalink?repo=centos-baseos-$stream&arch=$basearch&protocol=https,http
